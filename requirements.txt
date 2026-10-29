@@ -1,0 +1,3 @@
+# Python package for the reference implementation (python/scheme_ref.py,
+# make kat) and the distinguishers (attacks/distinguishers.py).
+cryptography

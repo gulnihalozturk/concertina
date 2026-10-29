@@ -1,0 +1,6 @@
+# build output and benchmark output (make, make bench)
+/concertina-bench
+/results/results.csv
+/results/table.tex
+__pycache__/
+*.pyc

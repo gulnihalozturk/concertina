@@ -1,0 +1,29 @@
+# Checks the reference implementation and the known answers, runs the
+# distinguishers of Section 2.2, and runs the self-tests of the AArch64 code
+# under QEMU (the runner is x86-64; benchmark figures are not taken here).
+name: ci
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Python packages
+        run: pip install -r requirements.txt
+      - name: Known answers reproduce from the reference implementation
+        run: |
+          make kat
+          git diff --exit-code src/kat_generated.h
+      - name: Distinguishers of Section 2.2
+        run: python3 attacks/distinguishers.py
+      - name: AArch64 toolchain and QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu libc6-dev-arm64-cross qemu-user
+      - name: Self-tests (AArch64 under QEMU)
+        run: |
+          make CC=aarch64-linux-gnu-gcc
+          qemu-aarch64 -cpu max -L /usr/aarch64-linux-gnu ./concertina-bench --selftest
